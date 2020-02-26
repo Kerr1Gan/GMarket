@@ -13,7 +13,7 @@
             <el-table-column prop="activeDevice" label="日活跃设备"></el-table-column>
             <el-table-column prop="newDevice" label="日新增设备"></el-table-column>
             <el-table-column prop="clickProductDevice" label="点击产品设备数"></el-table-column>
-            <el-table-column prop="installProductDevice" label="安装产品设别数"></el-table-column>
+            <el-table-column prop="installProductDevice" label="安装产品设备数"></el-table-column>
           </el-table>
         </el-main>
       </el-container>
