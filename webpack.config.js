@@ -59,11 +59,11 @@ module.exports = (options = {}) => ({
     host: '127.0.0.1',
     port: 8010,
     proxy: {
-      '/api/': {
+      '/market/': {
         target: 'http://127.0.0.1:9555',
         changeOrigin: true,
         pathRewrite: {
-          '^/api': ''
+          '^/market': '/market'
         }
       }
     },
