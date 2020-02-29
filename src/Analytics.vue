@@ -5,6 +5,22 @@
         <div class="title">Galaxy Lab</div>
       </el-header>
 
+      <div class="block" style="text-align:center">
+        <el-date-picker
+          v-model="value"
+          type="daterange"
+          align="right"
+          unlink-panels
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions"
+        ></el-date-picker>
+        <span>
+          <el-button @click.native="handleClick">查询</el-button>
+        </span>
+      </div>
+
       <el-container>
         <el-main>
           <el-table :data="tableData">
@@ -146,51 +162,177 @@ export default {
     );
   },
   methods: {
-    updateProduct(product) {
-      let productDto = {
-        id: product.id,
-        productId: product.productId,
-        productIndex: product.productIndex,
-        applicationId: product.appId,
-        url: product.url,
-        //resource,
-        logo: product.logoUrl,
-        productName: product.productName,
-        slogan: product.slogan,
-        amount: product.amount,
-        interest: product.interest,
-        reviewTime: product.reviewTime,
-        enabled: product.enable
-      };
-      if (product["resource"] == "谷歌商店") {
-        productDto.installType = 0;
-      } else if (product["resource"] == "应用内安装") {
-        productDto.installType = 1;
-      } else if (product["resource"] == "跳转浏览器") {
-        productDto.installType = 2;
-      }
-      productDto["productIndex"] = parseInt(product["cid"]);
-      console.log(productDto);
-      Vue.http
-        .post("/market/api/appProducts?key=" + getUrlParam("key"), productDto)
-        .then(
+    handleClick() {
+      console.log(this.value);
+      console.log(`startTs = ${this.value[0].getTime()} endTs=${this.value[1].getTime()}`);
+      if (this.value != null && this.value.length >= 2) {
+        let ctx = this;
+        Vue.http
+          .get(
+            `/market/api/cashMarketEvent?startTime=${this.value[0].getTime()}&endTime=${this.value[1].getTime()}`
+          )
+          .then(
+            response => {
+              // get body data
+              console.log(response.body);
+              let array = new Array();
+              let body = response.body;
+              if (body["code"] == "ok") {
+                let r = body.body;
+                for (let i = 0; i < r.length; i++) {
+                  let item = {
+                    date: r[i]["beginTime"],
+                    appId: r[i]["applicationId"],
+                    activeDevice: r[i]["openedCount"],
+                    newDevice: r[i]["installCount"],
+                    clickProductDevice: r[i]["clickProductCount"],
+                    installProductDevice: r[i]["installProductCount"]
+                  };
+                  array[i] = item;
+                }
+              }
+              ctx.tableData = array;
+            },
+            response => {
+              // error callback
+            }
+          );
+
+        Vue.http
+          .get(
+            `/market/api/cashAppEvent?startTime=${this.value[0].getTime()}&endTime=${this.value[1].getTime()}`
+          )
+          .then(
+            response => {
+              // get body data
+              console.log(response.body);
+              let array = new Array();
+              let body = response.body;
+              if (body["code"] == "ok") {
+                let r = body.body;
+                for (let i = 0; i < r.length; i++) {
+                  let item = {
+                    date: r[i]["beginTime"],
+                    appId: r[i]["applicationId"],
+                    event: r[i]["event"],
+                    count: r[i]["count"]
+                  };
+                  array[i] = item;
+                }
+              }
+              ctx.tableData2 = array;
+            },
+            response => {
+              // error callback
+            }
+          );
+
+        Vue.http
+          .get(
+            `/market/api/cashProductEvent?startTime=${this.value[0].getTime()}&endTime=${this.value[1].getTime()}`
+          )
+          .then(
+            response => {
+              // get body data
+              console.log(response.body);
+              let array = new Array();
+              let body = response.body;
+              if (body["code"] == "ok") {
+                let r = body.body;
+                for (let i = 0; i < r.length; i++) {
+                  let item = {
+                    date: r[i]["beginTime"],
+                    productName: r[i]["productName"],
+                    count: r[i]["count"]
+                  };
+                  array[i] = item;
+                }
+              }
+              ctx.tableData3 = array;
+            },
+            response => {
+              // error callback
+            }
+          );
+      } else {
+        let ctx = this;
+        Vue.http.get("/market/api/cashMarketEvent").then(
           response => {
             // get body data
             console.log(response.body);
-            if (response.body.code == "ok") {
-              this.$message("操作成功");
-              //location.reload();
-            } else {
-              this.$message("操作失败");
+            let array = new Array();
+            let body = response.body;
+            if (body["code"] == "ok") {
+              let r = body.body;
+              for (let i = 0; i < r.length; i++) {
+                let item = {
+                  date: r[i]["beginTime"],
+                  appId: r[i]["applicationId"],
+                  activeDevice: r[i]["openedCount"],
+                  newDevice: r[i]["installCount"],
+                  clickProductDevice: r[i]["clickProductCount"],
+                  installProductDevice: r[i]["installProductCount"]
+                };
+                array[i] = item;
+              }
             }
+            ctx.tableData = array;
           },
           response => {
             // error callback
-            this.$message("操作失败");
           }
         );
-    },
-    updateSelect(p1, p2) {}
+
+        Vue.http.get("/market/api/cashAppEvent").then(
+          response => {
+            // get body data
+            console.log(response.body);
+            let array = new Array();
+            let body = response.body;
+            if (body["code"] == "ok") {
+              let r = body.body;
+              for (let i = 0; i < r.length; i++) {
+                let item = {
+                  date: r[i]["beginTime"],
+                  appId: r[i]["applicationId"],
+                  event: r[i]["event"],
+                  count: r[i]["count"]
+                };
+                array[i] = item;
+              }
+            }
+            ctx.tableData2 = array;
+          },
+          response => {
+            // error callback
+          }
+        );
+
+        Vue.http.get("/market/api/cashProductEvent").then(
+          response => {
+            // get body data
+            console.log(response.body);
+            let array = new Array();
+            let body = response.body;
+            if (body["code"] == "ok") {
+              let r = body.body;
+              for (let i = 0; i < r.length; i++) {
+                let item = {
+                  date: r[i]["beginTime"],
+                  productName: r[i]["productName"],
+                  count: r[i]["count"]
+                };
+                array[i] = item;
+              }
+            }
+            ctx.tableData3 = array;
+          },
+          response => {
+            // error callback
+          }
+        ); 
+      }
+    }
   },
   data() {
     return {
@@ -208,7 +350,39 @@ export default {
         interest: [{ required: true, message: "url", trigger: "change" }],
         reviewTime: [{ required: true, message: "url", trigger: "change" }]
       },
-      formList: null
+      formList: null,
+      pickerOptions: {
+        shortcuts: [
+          {
+            text: "最近一周",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit("pick", [start, end]);
+            }
+          },
+          {
+            text: "最近一个月",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit("pick", [start, end]);
+            }
+          },
+          {
+            text: "最近三个月",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit("pick", [start, end]);
+            }
+          }
+        ]
+      },
+      value: null
     };
   }
 };

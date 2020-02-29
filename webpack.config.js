@@ -28,6 +28,7 @@ module.exports = (options = {}) => ({
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader', 'postcss-loader']
+        // use: ['style-loader', 'css-loader']
       },
       {
         test: /\.(png|jpg|jpeg|gif|eot|ttf|woff|woff2|svg|svgz)(\?.+)?$/,
@@ -63,7 +64,7 @@ module.exports = (options = {}) => ({
         target: 'http://127.0.0.1:9555',
         changeOrigin: true,
         pathRewrite: {
-          '^/market': '/market'
+          //'^/market': ''
         }
       }
     },

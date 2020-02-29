@@ -24,7 +24,8 @@ const routes = [
 // keep it simple for now.
 const router = new VueRouter({
   routes: routes,
-  mode: 'history'
+  mode: 'history',
+  base: '/',
 })
 
 new Vue({
