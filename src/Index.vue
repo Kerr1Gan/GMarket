@@ -54,6 +54,21 @@
         <el-form-item label="包名" prop="item.appId">
           <el-input v-model="item.appId"></el-input>
         </el-form-item>
+        <el-upload
+          class="upload-demo"
+          drag
+          action="/market/api/uploadPhoto"
+          :on-success="uploadSuccess"
+          :on-error="uploadError"
+          multiple
+        >
+          <i class="el-icon-upload"></i>
+          <div class="el-upload__text">
+            将文件拖到此处，或
+            <em>点击上传</em>
+          </div>
+          <div class="el-upload__tip" slot="tip">只能上传jpg/png文件</div>
+        </el-upload>
         <el-form-item label="链接" prop="item.url">
           <el-input v-model="item.url"></el-input>
         </el-form-item>
@@ -233,15 +248,6 @@ export default {
     );
   },
   methods: {
-    startHacking() {
-      this.$notify({
-        title: "It works!",
-        type: "success",
-        message:
-          "We've laid the ground work for you. It's time for you to build something epic!",
-        duration: 5000
-      });
-    },
     downloadBtnClick() {
       //获取当前域名
       let host = window.location.host;
@@ -301,7 +307,23 @@ export default {
           }
         );
     },
-    updateSelect(p1, p2) {}
+    updateSelect(p1, p2) {},
+    uploadSuccess(response, file, fileList) {
+      console.log(response);
+      let logoUrl = response.body;
+      let len = window.location.href.length;
+      let url = window.location.href.substring(0, len - 1);
+      url = url.substring(0, url.lastIndexOf("/"));
+      url += logoUrl;
+      console.log(url);
+      this.$alert(url, "logo地址", {
+        confirmButtonText: "确定",
+        callback: action => {}
+      });
+    },
+    uploadError(err, file, fileList) {
+      this.$message("上传失败，请重试");
+    }
   },
   data() {
     return {
