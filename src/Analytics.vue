@@ -50,7 +50,8 @@
           <el-table :data="tableData3">
             <el-table-column prop="date" label="日期" width="220"></el-table-column>
             <el-table-column prop="productName" label="产品名" style="text-align:left"></el-table-column>
-            <el-table-column prop="count" label="数量"></el-table-column>
+            <el-table-column prop="count" label="点击次数"></el-table-column>
+            <el-table-column prop="installCount" label="安装次数"></el-table-column>
           </el-table>
         </el-main>
       </el-container>
@@ -149,7 +150,8 @@ export default {
             let item = {
               date: r[i]["beginTime"],
               productName: r[i]["productName"],
-              count: r[i]["count"]
+              count: r[i]["count"],
+              installCount: r[i]["installCount"]
             };
             array[i] = item;
           }
@@ -164,7 +166,9 @@ export default {
   methods: {
     handleClick() {
       console.log(this.value);
-      console.log(`startTs = ${this.value[0].getTime()} endTs=${this.value[1].getTime()}`);
+      console.log(
+        `startTs = ${this.value[0].getTime()} endTs=${this.value[1].getTime()}`
+      );
       if (this.value != null && this.value.length >= 2) {
         let ctx = this;
         Vue.http
@@ -243,7 +247,8 @@ export default {
                   let item = {
                     date: r[i]["beginTime"],
                     productName: r[i]["productName"],
-                    count: r[i]["count"]
+                    count: r[i]["count"],
+                    installCount: r[i]["installCount"]
                   };
                   array[i] = item;
                 }
@@ -320,7 +325,8 @@ export default {
                 let item = {
                   date: r[i]["beginTime"],
                   productName: r[i]["productName"],
-                  count: r[i]["count"]
+                  count: r[i]["count"],
+                  installCount: r[i]["installCount"]
                 };
                 array[i] = item;
               }
@@ -330,7 +336,7 @@ export default {
           response => {
             // error callback
           }
-        ); 
+        );
       }
     }
   },
