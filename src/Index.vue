@@ -277,7 +277,8 @@ export default {
         amount: product.amount,
         interest: product.interest,
         reviewTime: product.reviewTime,
-        enabled: product.enable
+        enabled: product.enable,
+        visible: true
       };
       if (product["resource"] == "谷歌商店") {
         productDto.installType = 0;
